@@ -45,23 +45,41 @@ class CLI
         parsed_search = JSON.parse(response.body)
 
         choices = []
+        # choices = [
+        #     { key: "1", name: "overwrite this file", value: :yes },
+        #     { key: "2", name: "do not overwrite this file", value: :no },
+        #     { key: "3", name: "overwrite this file and all later files", value: :all },
+        #     { key: "4", name: "show diff", value: :diff },
+        #     { key: "5", name: "quit; do not overwrite this file ", value: :quit }
+        #   ]
+        
+        i = 0
+        5.times do
+        book = {}
+        book[:title] = parsed_search['items'][i]['volumeInfo']['title'] || 'N/A'
 
-        binding.pry
-        title = parsed_search['items'][0]['volumeInfo']['title']
-        author = parsed_search['items'][0]['volumeInfo']['authors'][0]
-        publisher = parsed_search['items'][0]['volumeInfo']['publisher']
-        eachBook = title + author + publisher
+        if parsed_search['items'][i]['volumeInfo']['authors'].count <= 1
+            book[:author] = parsed_search['items'][i]['volumeInfo']['authors'][0] || 'N/A'
+        else 
+            book[:author] = parsed_search['items'][i]['volumeInfo']['authors'].join(" & ")
+        end
 
-        choices.push(eachBook)
+        book[:publisher] = parsed_search['items'][i]['volumeInfo']['publisher'] || 'N/A'
 
 
+        eachBook = 'Book: ' + book[:title] + ', Author: ' + book[:author] + ', Publishing Company: ' + book[:publisher]
+        
+        choices.push({key: i, name: eachBook, value: book})
+        i += 1
+        end
+        
         prompt = TTY::Prompt.new
+        selectedBooksArr = prompt.multi_select("Select books?", choices)
 
-        prompt.multi_select("Select drinks?", choices)
-
-
-
+        @user.insert_books(selectedBooksArr)
+        # binding.pry 
+        # 0
     end
-    
+
 
 end
