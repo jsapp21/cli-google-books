@@ -24,9 +24,30 @@ class CLI
     end
 
     def user_dashboard
-        puts 'user dashboard page'
+        puts 'USER DASHBOARD'
+        prompt = TTY::Prompt.new
+        prompt.ask("Search google books...")
 
         search = gets.chomp
+
+        get_search(search)
+        
+    end
+
+    def get_search(search)
+
+        url = "https://www.googleapis.com/books/v1/volumes?q="
+
+        final_url = url + search
+
+        binding.pry
+
+
+        response = RestClient.get(final_url)
+        parsed_search = JSON.parse(response.body)
+        binding.pry
+        0
+        # puts `#{response.cookies}`
     end
     
 
