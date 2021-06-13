@@ -1,0 +1,17 @@
+# gem 'activerecord', '~> 5.0', '>= 5.0.0.1'
+source "https://rubygems.org"
+
+gem 'rake'
+gem 'sinatra-activerecord'
+gem 'activerecord'
+gem 'require_all'
+gem 'sqlite3'
+gem 'pry'
+gem 'rest-client'
+gem 'json'
+gem 'tty-prompt'
+# gem 'rspec'
+# gem 'dotenv'
+# gem 'faker'
+# gem 'tty-table'
+# gem 'colorize'
