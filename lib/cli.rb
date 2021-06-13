@@ -37,17 +37,30 @@ class CLI
     def get_search(search)
 
         url = "https://www.googleapis.com/books/v1/volumes?q="
+        maxFive = "&maxResults=5"
 
-        final_url = url + search
-
-        binding.pry
-
+        final_url = url + search + maxFive
 
         response = RestClient.get(final_url)
         parsed_search = JSON.parse(response.body)
+
+        choices = []
+
         binding.pry
-        0
-        # puts `#{response.cookies}`
+        title = parsed_search['items'][0]['volumeInfo']['title']
+        author = parsed_search['items'][0]['volumeInfo']['authors'][0]
+        publisher = parsed_search['items'][0]['volumeInfo']['publisher']
+        eachBook = title + author + publisher
+
+        choices.push(eachBook)
+
+
+        prompt = TTY::Prompt.new
+
+        prompt.multi_select("Select drinks?", choices)
+
+
+
     end
     
 
