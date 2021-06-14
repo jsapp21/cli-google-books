@@ -14,21 +14,19 @@ class User < ActiveRecord::Base
     end
 
     def insert_books(selectedBooksArr)
-
         selectedBooksArr.each do |book|
             bookExists = Book.find_by(title: book[:title])
             if bookExists
                 list = List.find_or_create_by(book_id: bookExists[:id], user_id: self.id)
-                puts 'this is already one of your books'
+                puts '❗️ This book is already on your Reading List ❗️'
+                sleep 1
             else
                 bookNew = Book.create(author: book[:author], title: book[:title], publisher: book[:publisher])
                 list = List.find_or_create_by(book_id: bookNew[:id], user_id: self.id)
-                puts 'added book to reading list'
+                puts '✅  This book was added book to Reading List ✅ '
+                sleep 1
             end
         end
-        binding.pry
-        0
-
     end
     
 end

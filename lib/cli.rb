@@ -1,12 +1,13 @@
 class CLI
 
     def run
-        puts 'Hello 8th Light!'
+        puts 'Google 📚'
+        sleep 1
         sign_in_or_create_user
-        
     end
 
     def sign_in_or_create_user
+        clear_terminal
         prompt = TTY::Prompt.new
         options = ["Login", "Create a new user"]
         prompt.select("Select an option:", options) 
@@ -15,43 +16,44 @@ class CLI
     end
 
     def login
+        clear_terminal
         puts "Enter your username:" 
         
         name = gets.chomp 
         @user = User.find_or_create_user(name)
-        sleep 2
-        user_dashboard 
+        sleep 1
+        clear_terminal
+
+        menu_prompt
     end
 
-    def user_dashboard
-        puts 'USER DASHBOARD'
-        prompt = TTY::Prompt.new
-        prompt.ask("Search google books...")
-
+    def search_for_books
+        puts "Search Google Books..."
         search = gets.chomp
 
-        get_search(search)
-        
+        if search == ''
+            clear_terminal
+            puts '❌ You must enter text for search result ❌ '
+            puts 'Try again.'
+            sleep 1
+            menu_prompt
+        else
+            get_search(search)
+        end
     end
 
     def get_search(search)
-
         url = "https://www.googleapis.com/books/v1/volumes?q="
         maxFive = "&maxResults=5"
-
+        
         final_url = url + search + maxFive
-
+        
+        clear_terminal
         response = RestClient.get(final_url)
         parsed_search = JSON.parse(response.body)
+        # binding.pry
 
         choices = []
-        # choices = [
-        #     { key: "1", name: "overwrite this file", value: :yes },
-        #     { key: "2", name: "do not overwrite this file", value: :no },
-        #     { key: "3", name: "overwrite this file and all later files", value: :all },
-        #     { key: "4", name: "show diff", value: :diff },
-        #     { key: "5", name: "quit; do not overwrite this file ", value: :quit }
-        #   ]
         
         i = 0
         5.times do
@@ -74,11 +76,59 @@ class CLI
         end
         
         prompt = TTY::Prompt.new
-        selectedBooksArr = prompt.multi_select("Select books?", choices)
+        selectedBooksArr = prompt.multi_select("Select books to add to your Reading List:", choices)
+        clear_terminal
 
         @user.insert_books(selectedBooksArr)
-        # binding.pry 
-        # 0
+        clear_terminal
+
+        menu_prompt
+    end
+
+    def menu_prompt
+        prompt = TTY::Prompt.new
+        display_menu = ["Search Google Books?", "View Reading List", "Log Off"]
+        menu_choice = prompt.select("Select one:", display_menu)
+
+        selection(menu_choice)
+    end
+
+    def selection(menu_choice)
+        clear_terminal
+        if menu_choice == "Search Google Books?"
+            search_for_books 
+        elsif menu_choice == "View Reading List"
+            if @user.books.any? == false  
+                puts "Sorry, you have no books saved."
+                sleep 1
+            else
+                view_reading_list
+            end
+        else menu_choice == "Log Off"
+            log_off
+        end
+    end
+
+    def view_reading_list
+        clear_terminal 
+        puts "#{@user.name} Reading List:" 
+
+        @user.reload 
+        @user.books.each do |book|
+            puts  '- Book: ' + book.title + ', Author: ' + book.author + ', Publishing Company: ' + book.publisher
+        end
+
+        menu_prompt
+    end
+
+    def log_off
+        puts "Goodbye #{@user.name}!"
+        sleep 1
+        clear_terminal
+    end 
+
+    def clear_terminal
+        system "clear"
     end
 
 
