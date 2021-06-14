@@ -7,6 +7,7 @@
 
 ## Installation
 - fork and clone repo
+- cd into cli-books-app
 - bundle install
 
 ## How to run the application
