@@ -2,12 +2,6 @@ class CLI
 
     def run
         puts 'Google 📚'
-        sleep 1
-        sign_in_or_create_user
-    end
-
-    def sign_in_or_create_user
-        clear_terminal
         prompt = TTY::Prompt.new
         options = ["Login", "Create a new user"]
         prompt.select("Select an option:", options) 
@@ -29,6 +23,7 @@ class CLI
 
     def search_for_books
         puts "Search Google Books..."
+        puts 'Try searching by author, book title, categories etc.'
         search = gets.chomp
 
         if search == ''
@@ -51,23 +46,36 @@ class CLI
         clear_terminal
         response = RestClient.get(final_url)
         parsed_search = JSON.parse(response.body)
-        # binding.pry
 
-        choices = []
-        
-        i = 0
-        5.times do
-        book = {}
-        book[:title] = parsed_search['items'][i]['volumeInfo']['title'] || 'N/A'
 
-        if parsed_search['items'][i]['volumeInfo']['authors'].count <= 1
-            book[:author] = parsed_search['items'][i]['volumeInfo']['authors'][0] || 'N/A'
-        else 
-            book[:author] = parsed_search['items'][i]['volumeInfo']['authors'].join(" & ")
+        if parsed_search['totalItems'] == 0
+            clear_terminal
+            puts '❌ You must enter text for search result ❌ '
+            puts 'Try again.'
+            sleep 1
+            menu_prompt
         end
 
-        book[:publisher] = parsed_search['items'][i]['volumeInfo']['publisher'] || 'N/A'
+        choices = []
+        i = 0
 
+        5.times do
+        book = {}
+        search = parsed_search['items'][i]['volumeInfo']
+        
+        book[:title] = search['title'] || 'N/A'
+
+        if !search['authors']
+            book[:author] = 'N/A'
+        elsif 
+            search['authors'].count <= 1
+            book[:author] = search['authors'][0] || 'N/A'
+        else
+            book[:author] = search['authors'].join(" & ")
+        end
+        
+
+        book[:publisher] = parsed_search['items'][i]['volumeInfo']['publisher'] || 'N/A'
 
         eachBook = 'Book: ' + book[:title] + ', Author: ' + book[:author] + ', Publishing Company: ' + book[:publisher]
         
@@ -101,6 +109,7 @@ class CLI
             if @user.books.any? == false  
                 puts "Sorry, you have no books saved."
                 sleep 1
+                menu_prompt
             else
                 view_reading_list
             end
@@ -130,6 +139,4 @@ class CLI
     def clear_terminal
         system "clear"
     end
-
-
 end
