@@ -139,4 +139,5 @@ class CLI
     def clear_terminal
         system "clear"
     end
+    
 end
