@@ -74,8 +74,7 @@ class CLI
             book[:author] = search['authors'].join(" & ")
         end
         
-
-        book[:publisher] = parsed_search['items'][i]['volumeInfo']['publisher'] || 'N/A'
+        book[:publisher] = search['publisher'] || 'N/A'
 
         eachBook = 'Book: ' + book[:title] + ', Author: ' + book[:author] + ', Publishing Company: ' + book[:publisher]
         
