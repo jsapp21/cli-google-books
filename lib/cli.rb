@@ -4,14 +4,13 @@ class CLI
         puts 'Google 📚'
         prompt = TTY::Prompt.new
         options = ["Login", "Create a new user"]
-        prompt.select("Select an option:", options) 
+        selection = prompt.select("Select an option:", options) 
 
-        if options == 'Login'
+        if selection == 'Login'
             login
         else
             create_new_user  
         end
-
     end
 
     def create_new_user
@@ -24,26 +23,43 @@ class CLI
             sleep 1
             create_new_user
         else
-            @user = User.create_user(name)
-            clear_terminal
-            menu_prompt
+            @user = User.find_by(name: name)
+            if @user
+                puts "❗️ Username is already taken, try again❗️"
+                sleep 1
+                create_new_user
+            else
+                @user = User.create(name: name)
+                puts "✅  Your username was created! ✅ "
+                sleep 1
+                clear_terminal
+                menu_prompt
+            end
         end 
-
     end
 
     def login
         clear_terminal
         puts "Enter your username:" 
-        
         name = gets.chomp 
-        @user = User.find_or_create_user(name)
-        sleep 1
-        clear_terminal
 
-        if @user
-            menu_prompt
-        else
+        if name.length < 1
+            puts '❗️ Username cannot be blank. Try again. ❗️'
+            sleep 1
             login
+        else
+            @user = User.find_by(name: name)
+            if @user
+                puts "Welcome back! #{@user.name}"
+                sleep 1
+                clear_terminal
+                menu_prompt
+            else
+                puts "❗️ Username could not be found, try again❗️"
+                sleep 1
+                clear_terminal
+                login
+            end
         end
     end
 
@@ -131,12 +147,12 @@ class CLI
         if menu_choice == "Search Google Books?"
             search_for_books 
         elsif menu_choice == "View Reading List"
-            if @user.books.any? == false  
+            if @user.books.any?  
+                view_reading_list
+            else
                 puts "Sorry, you have no books saved."
                 sleep 1
                 menu_prompt
-            else
-                view_reading_list
             end
         else menu_choice == "Log Off"
             log_off

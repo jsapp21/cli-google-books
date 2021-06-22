@@ -1,17 +1,6 @@
 class User < ActiveRecord::Base
     has_many :lists
     has_many :books, through: :lists
-    validates :name, presence: true
-
-    def self.create_user(name)
-        user = User.find_by(name: name)
-        if user
-            puts "❗️ Username is already taken. Try again❗️"
-        else
-            puts "✅  Your username was created! ✅ "
-            User.create(name: name)
-        end
-    end
 
     def insert_books(selectedBooksArr)
         selectedBooksArr.each do |book|
