@@ -6,7 +6,29 @@ class CLI
         options = ["Login", "Create a new user"]
         prompt.select("Select an option:", options) 
 
-        login  
+        if options == 'Login'
+            login
+        else
+            create_new_user  
+        end
+
+    end
+
+    def create_new_user
+        clear_terminal
+        puts "Create your username:" 
+        name = gets.chomp 
+
+        if name.length < 1
+            puts '❗️ Username cannot be blank. Try again. ❗️'
+            sleep 1
+            create_new_user
+        else
+            @user = User.create_user(name)
+            clear_terminal
+            menu_prompt
+        end 
+
     end
 
     def login
@@ -18,7 +40,11 @@ class CLI
         sleep 1
         clear_terminal
 
-        menu_prompt
+        if @user
+            menu_prompt
+        else
+            login
+        end
     end
 
     def search_for_books

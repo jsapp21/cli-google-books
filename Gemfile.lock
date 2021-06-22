@@ -89,5 +89,8 @@ DEPENDENCIES
   sqlite3
   tty-prompt
 
+RUBY VERSION
+   ruby 2.6.1p33
+
 BUNDLED WITH
    2.2.6

@@ -1,14 +1,14 @@
 class User < ActiveRecord::Base
     has_many :lists
     has_many :books, through: :lists
+    validates :name, presence: true
 
-    def self.find_or_create_user(name)
+    def self.create_user(name)
         user = User.find_by(name: name)
         if user
-            puts "Welcome back!"
-            user 
+            puts "❗️ Username is already taken. Try again❗️"
         else
-            puts "Your username was created."
+            puts "✅  Your username was created! ✅ "
             User.create(name: name)
         end
     end
