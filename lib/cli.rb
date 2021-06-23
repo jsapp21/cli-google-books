@@ -19,17 +19,17 @@ class CLI
         name = gets.chomp 
 
         if name.length < 1
-            puts '❗️ Username cannot be blank. Try again. ❗️'
+            puts '❗️ Username cannot be blank. Try again❗️'
             sleep 1
             create_new_user
         else
-            @user = User.find_by(name: name)
+            @user = User.find_user(name)
             if @user
                 puts "❗️ Username is already taken, try again❗️"
                 sleep 1
                 create_new_user
             else
-                @user = User.create(name: name)
+                @user = User.create_user(name)
                 puts "✅  Your username was created! ✅ "
                 sleep 1
                 clear_terminal
@@ -44,11 +44,11 @@ class CLI
         name = gets.chomp 
 
         if name.length < 1
-            puts '❗️ Username cannot be blank. Try again. ❗️'
+            puts '❗️ Username cannot be blank, try again❗️'
             sleep 1
             login
         else
-            @user = User.find_by(name: name)
+            @user = User.find_user(name)
             if @user
                 puts "Welcome back! #{@user.name}"
                 sleep 1
@@ -79,61 +79,6 @@ class CLI
         end
     end
 
-    def get_search(search)
-        url = "https://www.googleapis.com/books/v1/volumes?q="
-        maxFive = "&maxResults=5"
-        
-        final_url = url + search + maxFive
-        
-        clear_terminal
-        response = RestClient.get(final_url)
-        parsed_search = JSON.parse(response.body)
-
-
-        if parsed_search['totalItems'] == 0
-            clear_terminal
-            puts '❌ You must enter text for search result ❌ '
-            puts 'Try again.'
-            sleep 1
-            menu_prompt
-        end
-
-        choices = []
-        i = 0
-
-        5.times do
-        book = {}
-        search = parsed_search['items'][i]['volumeInfo']
-        
-        book[:title] = search['title'] || 'N/A'
-
-        if !search['authors']
-            book[:author] = 'N/A'
-        elsif 
-            search['authors'].count <= 1
-            book[:author] = search['authors'][0] || 'N/A'
-        else
-            book[:author] = search['authors'].join(" & ")
-        end
-        
-        book[:publisher] = search['publisher'] || 'N/A'
-
-        eachBook = 'Book: ' + book[:title] + ', Author: ' + book[:author] + ', Publishing Company: ' + book[:publisher]
-        
-        choices.push({key: i, name: eachBook, value: book})
-        i += 1
-        end
-        
-        prompt = TTY::Prompt.new
-        selectedBooksArr = prompt.multi_select("Select books to add to your Reading List:", choices)
-        clear_terminal
-
-        @user.insert_books(selectedBooksArr)
-        clear_terminal
-
-        menu_prompt
-    end
-
     def menu_prompt
         prompt = TTY::Prompt.new
         display_menu = ["Search Google Books?", "View Reading List", "Log Off"]
@@ -147,7 +92,7 @@ class CLI
         if menu_choice == "Search Google Books?"
             search_for_books 
         elsif menu_choice == "View Reading List"
-            if @user.books.any?  
+            if User.user_books
                 view_reading_list
             else
                 puts "Sorry, you have no books saved."
@@ -163,11 +108,12 @@ class CLI
         clear_terminal 
         puts "#{@user.name} Reading List:" 
 
-        @user.reload 
-        @user.books.each do |book|
+        @user = User.refresh_user
+        user_book_list = User.book_list
+        user_book_list.each do |book|
             puts  '- Book: ' + book.title + ', Author: ' + book.author + ', Publishing Company: ' + book.publisher
         end
-
+        
         menu_prompt
     end
 
