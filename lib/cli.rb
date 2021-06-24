@@ -26,7 +26,7 @@ class CLI
         if menu_choice == "Search Google Books?"
             search_for_books 
         elsif menu_choice == "View Reading List"
-            if User.user_books
+            if @user.user_books
                 view_reading_list
             else
                 puts "Sorry, you have no books saved."

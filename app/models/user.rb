@@ -3,23 +3,23 @@ class User < ActiveRecord::Base
     has_many :books, through: :lists
 
     def self.find_user(name)
-      @user = User.find_by(name: name)
+        @user = User.find_by(name: name)
     end
 
     def self.create_user(name)
         @user = User.create(name: name)
     end
 
-    def self.user_books
-        @user.books.any?
+    def user_books
+        self.books.any?
     end
 
-    def self.refresh_user
-        @user.reload 
+    def refresh_user
+        self.reload 
     end
 
-    def self.book_list
-        @user.books
+    def book_list
+        self.books
     end
     
 end
