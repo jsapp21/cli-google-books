@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 
-# ruby verison 2.6.1
-ruby '~> 2.6.1'
+ruby '2.6.1'
 gem 'rake'
 gem 'sinatra-activerecord'
 gem 'activerecord'

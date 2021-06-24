@@ -40,12 +40,12 @@ end
 def insert_books(selectedBooksArr)
     selectedBooksArr.each do |book|
         bookExists = Book.insert_or_find_book(book)
-        list = List.check_list_for_book(book, bookExists, @user.id)
+        list = List.check_list_for_book(bookExists, @user.id)
         if list
             puts '❗️ This book is already on your Reading List ❗️'
             sleep 1
         else
-            List.add_book_to_list(book, bookExists, @user.id)
+            List.add_book_to_list(bookExists, @user.id)
             puts '✅  This book was added book to Reading List ✅ '
             sleep 1
         end
