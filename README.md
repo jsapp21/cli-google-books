@@ -18,6 +18,9 @@
 - view reading list
 - log off
 
+## How to run the test
+- rspec
+
 ## File structure
 
 1. apps/models - domain models files
